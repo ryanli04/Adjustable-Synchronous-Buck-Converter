@@ -97,8 +97,8 @@ Analog Devices provides an LTspice model of the LTC3624. Simulate before orderin
 
 ### 3. Order and assemble
 
-- Order 5 bare boards (the minimum order) plus a stencil, and parts for 2 boards, so one mistake doesn't mean a reorder.
-- U1 and L1 have pads underneath the part and need hot air or a hot plate with solder paste. Everything else can be soldered with an iron. Alternatively, have PCBWay assemble only U1 and L1 (the Combo option).
+- Order bare boards and parts.
+- U1 and L1 have pads underneath the part and need hot air or a hot plate with solder paste. Everything else can be soldered with an iron. Alternatively, have PCBWay assemble only U1 and L1.
 
 ### 4. Bench testing
 

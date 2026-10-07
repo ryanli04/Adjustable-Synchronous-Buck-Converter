@@ -2773,7 +2773,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "LTC3624:DFN-8_DD_LIT"
+		(property "Footprint" "Package_DFN_QFN:DFN-8-1EP_3x3mm_P0.5mm_EP1.66x2.38mm"
 			(at 116.84 90.17 0)
 			(hide yes)
 			(show_name no)

@@ -1,0 +1,5 @@
+(sym_lib_table
+	(version 7)
+	(lib (name "a") (type "KiCad") (uri "C:/Users/li_ry/Downloads/ul_LTC3624EDD-PBF/KiCADv6/LTC3624.kicad_sym") (options "") (descr ""))
+	(lib (name "Buck_ConverterNew") (type "KiCad") (uri "${KIPRJMOD}/Buck_ConverterNew.kicad_sym") (options "") (descr ""))
+)

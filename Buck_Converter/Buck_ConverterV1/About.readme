@@ -1,0 +1,91 @@
+## Details
+V_in = ~9-15V
+V_out = 5V
+I_out = 2A
+P_out = 10W
+Synchronous Buck
+LTC3624
+
+### For Ideal Buck Converters:
+
+Duty Cycle = V_out / V_in
+
+### At our nominal input of 12V:
+
+Duty Cycle = 5 / 12 = 0.417 -> Approxy 41.7%
+
+### At 9V
+
+Duty Cycle = 5 / 9 = 0.556
+
+### At 15V
+
+Duty Cycle = 5 /15 = 0.333
+
+Converter needs to operate across 33-56% duty cycle
+
+## Feedback Resistors
+
+LTC3624
+
+V_out = 0.6(1 + R_1 / R_2)
+5 = 0.6(1 + R_1 / R_2)
+R_1 / R_2 = 7.333
+
+We require a 7.33:1 resistor ratio
+
+Eg. R_2 = 10K Ohms, R_1 = 73.3K Ohms -> These to be replaced by potentiometer for output control
+
+## Inductance
+
+ADI Datasheet for LTC3624 recommends 40% ripple current at max load.
+
+For 2A design, ΔI_L = 0.4(2A) = 0.8A
+
+From the datasheet:
+L = V_out / (f * ΔI_L) * (1 - V_out / V_in(max))
+
+Our highest case 15V:
+L = 5 / (1x10^6 * 0.8) * (1 - 5 / 15)
+L = 4.17µH
+
+Now testing with 4.7µH (Standard Inductance)
+
+With 4.7µH @ 15V
+ΔI_L = 5 / (1x10^6 * 4.17µH) * (1 - 5 / 15)
+ΔI_L = 0.71A P2P
+
+@ 2A Load
+I_L,peak = 2 + 0.71/2 = 2.36A
+
+@ 9V 
+ΔI_L = 0.47A P2P
+
+|   Inductor | Approx. ripple @ 15 V | Peak current @ 2 A |
+| ---------: | --------------------: | -----------------: |
+| **3.3 µH** |               ~1.01 A |            ~2.51 A |
+| **4.7 µH** |               ~0.71 A |            ~2.36 A |
+| **6.8 µH** |               ~0.49 A |            ~2.24 A |
+
+## Input Capacitor
+ADI says a 10 µF ceramic capacitor is sufficient
+We start with:
+C_in = 10 µF ceramic
+
+## Output Capacitor
+Purpose of output capacitor is to absorb the inductior's AC ripple current and supply/absorb current during load transients
+Based on ADI:
+C_out ​≈ ​(3*ΔI_out) / (f * V_droop​​)
+Start with:
+​C_out = 47 µF ceramic
+
+## Feedback Divider
+ADI confirms the LTC3624 uses a 0.6 V feedback reference:
+V_out = 0.6(1 + R_2 / R_1)
+
+So we want V_fb = 0.6V and for 5V:
+5 = 0.6(1 + R_2 / R_1)
+R_2 / R_1 = 7.33
+
+If we chose R_1 = 10K & R_2 = 73.33K
+V_out = 0.6(1 + 73.33 / 10) = 4.992V

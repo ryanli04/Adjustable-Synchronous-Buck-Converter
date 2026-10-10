@@ -4,13 +4,15 @@ A personal project to learn power electronics and PCB design by building a synch
 
 Designed in KiCad 10 around the Analog Devices [LTC3624](https://www.analog.com/en/products/ltc3624.html), a 17 V, 2 A synchronous step-down regulator with both power MOSFETs built in.
 
+![3D render of the Phase 1 board](images/pcb_3d.png)
+
 ## Current status
 
-**Phase 1: layout complete, next step is simulation.**
+**Phase 1: PCB layout complete (routed, ground pours, DRC clean). Next step is LTspice simulation.**
 
 | Phase | Goal | Status |
 |---|---|---|
-| 1 | Fixed 12 V to 5 V, 2 A converter | Schematic, placement and routing done |
+| 1 | Fixed 12 V to 5 V, 2 A converter | Schematic and PCB layout done, simulation next |
 | 2 | Adjustable output with a potentiometer | Not started |
 | 3 | LCD showing voltage, current, power and temperature | Not started |
 
@@ -19,7 +21,8 @@ Phase 1 progress:
 - [x] Component calculations (feedback divider, inductor, input and output capacitors)
 - [x] Schematic, ERC clean
 - [x] Footprints assigned and checked against datasheets
-- [x] PCB placement and routing, DRC clean
+- [x] PCB placement and routing
+- [x] Ground pours on both layers and stitching vias, DRC clean with schematic parity
 - [ ] LTspice simulation
 - [ ] Pre-order review
 - [ ] Order boards and parts
@@ -37,6 +40,10 @@ Phase 1 progress:
 | Output current | 2 A max (10 W) |
 | Switching frequency | 1 MHz (fixed by the LTC3624) |
 | Operating mode | Pulse-skipping (MODE/SYNC tied to GND) for lowest output ripple |
+
+### Schematic
+
+![Phase 1 schematic](images/schematic.png)
 
 ### Key design calculations
 
@@ -63,13 +70,19 @@ Phase 1 progress:
 
 ### PCB
 
-- 2 layers, 41.8 × 18.3 mm, solid GND plane on the bottom layer
+![3D render, top view](images/pcb_3d_top.png)
+
+![Top copper layer and silkscreen](images/pcb_layout_top.png)
+
+- 2 layers, 41.8 × 18.3 mm
+- All routing is on the top layer. The bottom layer is an unbroken GND plane, and the top layer has a GND pour around the traces.
+- Stitching vias around the board edges and near U1, C2 and C4 tie the top pour to the bottom plane, so both layers act as one low-impedance ground.
 - Laid out following the LTC3624 datasheet's board layout checklist:
   - **C2 sits right against the VIN pins**, with its ground pad next to the exposed pad, so the switching loop (VIN, C2, GND) is as small as possible.
   - **L1 sits directly above the SW pin**, with C4 beside it.
   - **The feedback divider and INTVCC capacitor** are on the opposite side of U1 from SW and L1.
   - **Thermal vias** in the exposed pad connect it to the ground plane.
-- Design rules: 0.15 mm minimum clearance (PCBWay standard), with 1 mm tracks for the power nets (VIN, +5V, GND, SW)
+- Design rules: 0.15 mm minimum clearance (PCBWay standard), with 1 mm tracks for the power nets (VIN, +5V, GND, SW), narrowing to 0.25 mm only where they meet U1's 0.5 mm-pitch pins
 - U1 uses KiCad's built-in `DFN-8-1EP_3x3mm_P0.5mm_EP1.66x2.38mm` footprint, which matches the datasheet's recommended land pattern.
 - J1 is the input (top screw +VIN, bottom screw GND). J2 is the output (top screw GND, bottom screw +5V), as marked on the silkscreen.
 
@@ -77,10 +90,12 @@ Phase 1 progress:
 
 ### 1. Simulation (LTspice)
 
-Analog Devices provides an LTspice model of the LTC3624. Simulate before ordering to catch design mistakes cheaply:
+Analog Devices provides an LTspice model of the LTC3624. Simulate before ordering to catch design mistakes cheaply. Use realistic part values: ceramic capacitors lose much of their capacitance under DC voltage (roughly 5 µF for C2 and 20 to 25 µF for C4), and the inductor and capacitors should have their series resistance set.
 
+- [ ] Hot-plug: model the supply cable as about 1 µH and 0.05 Ω in series with a 0 to 15 V step. With C1 fitted, VIN must stay below the 17 V absolute maximum. Repeat without C1 to see the ringing it prevents
 - [ ] Startup at 9 V, 12 V and 15 V input: output reaches 5.0 V with no large overshoot (internal soft-start is about 1 ms)
 - [ ] Steady-state output ripple and inductor ripple current at 2 A load, compared with the hand calculations
+- [ ] Current-limit margin: at 15 V input and 2 A, measure peak inductor current with L1 at 4.7 µH and at its −20% tolerance (3.76 µH). Compare by hand against the 2.4 A minimum peak current limit, because the model uses the typical 3 A limit
 - [ ] Load step from 0.2 A to 2 A and back: check how far the output dips, and for ringing
 - [ ] Input step from 9 V to 15 V
 - [ ] Short-circuit or overload behavior: peak inductor current stays below L1's saturation rating
@@ -150,6 +165,7 @@ Add a microcontroller and display showing output voltage, current, power and tem
 ## Repository structure
 
 ```
+images/                          Board renders and schematic for this README
 Buck_Converter/
   Buck_ConverterV1/
     Buck_ConverterV1.kicad_pro   KiCad project (design rules, net classes)
